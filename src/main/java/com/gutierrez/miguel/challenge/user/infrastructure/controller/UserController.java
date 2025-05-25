@@ -1,6 +1,7 @@
 package com.gutierrez.miguel.challenge.user.infrastructure.controller;
 
 import com.gutierrez.miguel.challenge.user.application.usecases.CreateUserService;
+import com.gutierrez.miguel.challenge.user.application.usecases.GetAllUsersService;
 import com.gutierrez.miguel.challenge.user.domain.model.User;
 import com.gutierrez.miguel.challenge.user.infrastructure.dto.UserRequest;
 import com.gutierrez.miguel.challenge.user.infrastructure.dto.UserResponse;
@@ -14,10 +15,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Controller for managing users in the system.
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final CreateUserService createUserService;
+    private final GetAllUsersService getAllUsersService;
 
     /**
      * Creates a new user account.
@@ -38,19 +43,19 @@ public class UserController {
      * @return ResponseEntity containing the created user information
      */
     @Operation(
-        summary = "Create a new user",
-        description = "Creates a new user account with the provided name and email"
+            summary = "Create a new user",
+            description = "Creates a new user account with the provided name and email"
     )
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "User created successfully",
-            content = @Content(schema = @Schema(implementation = UserResponse.class))
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid request parameters"
-        )
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "User created successfully",
+                    content = @Content(schema = @Schema(implementation = UserResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request parameters"
+            )
     })
     @PostMapping
     public ResponseEntity<UserResponse> create(
@@ -64,5 +69,34 @@ public class UserController {
                         user.getEmail()
                 )
         );
+    }
+
+    /**
+     * Retrieves all users from the system.
+     *
+     * @return ResponseEntity containing a list of all users
+     */
+    @Operation(
+            summary = "Get all users",
+            description = "Retrieves a list of all users in the system"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved all users",
+                    content = @Content(schema = @Schema(implementation = UserResponse.class))
+            )
+    })
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<User> users = getAllUsersService.getAllUsers();
+        List<UserResponse> response = users.stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail()
+                ))
+                .toList();
+        return ResponseEntity.ok(response);
     }
 } 

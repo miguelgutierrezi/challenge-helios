@@ -2,7 +2,6 @@ package com.gutierrez.miguel.challenge.notification.infrastructure.messaging.lis
 
 import com.gutierrez.miguel.challenge.notification.application.usecases.SendNotificationService;
 import com.gutierrez.miguel.challenge.notification.domain.model.Notification;
-import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationCategory;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

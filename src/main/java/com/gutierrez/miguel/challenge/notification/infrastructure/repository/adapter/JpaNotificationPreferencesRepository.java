@@ -1,7 +1,7 @@
 package com.gutierrez.miguel.challenge.notification.infrastructure.repository.adapter;
 
-import com.gutierrez.miguel.challenge.notification.infrastructure.repository.entity.NotificationPreferencesEntity;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationCategory;
+import com.gutierrez.miguel.challenge.notification.infrastructure.repository.entity.NotificationPreferencesEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
