@@ -23,28 +23,41 @@ public class UpdateNotificationPreferenceService {
 
     /**
      * Updates the notification preferences for a specific user and category.
-     * Creates a new preference entry if it doesn't exist, or updates the existing one.
+     * This method performs the following steps:
+     * 1. Creates a new NotificationPreferences object with a generated UUID
+     * 2. Sets the user ID, category, and enabled status
+     * 3. Saves the preference to the repository
+     * 
+     * The preference will be created if it doesn't exist, or updated if it already exists.
+     * This behavior is handled by the repository implementation.
      *
      * @param userId   The UUID of the user whose preferences are being updated
-     * @param category The notification category to update preferences for
-     * @param enabled  Whether notifications for this category should be enabled
+     * @param category The notification category to update preferences for (e.g., GAME_EVENT, SOCIAL_EVENT)
+     * @param enabled  Whether notifications for this category should be enabled (true) or disabled (false)
+     * @throws RuntimeException if there is an error saving the preference
      */
     public void updatePreference(UUID userId, NotificationCategory category, boolean enabled) {
         log.info("Updating notification preferences - user: {}, category: {}, enabled: {}",
                 userId, category, enabled);
 
         try {
-            NotificationPreferences preference = new NotificationPreferences(
-                    UUID.randomUUID(),
-                    userId,
-                    category,
-                    enabled
-            );
-            log.debug("Created preference object with ID: {}", preference.getId());
+            NotificationPreferences existing = repository.findByUserIdAndCategory(userId, category);
 
-            repository.save(preference);
-            log.info("Successfully updated notification preferences for user: {}, category: {}",
-                    userId, category);
+            if (existing != null) {
+                existing.setEnabled(enabled);
+                repository.save(existing);
+                log.info("Updated existing preference for user: {}, category: {}", userId, category);
+            } else {
+                NotificationPreferences preference = new NotificationPreferences(
+                        UUID.randomUUID(),
+                        userId,
+                        category,
+                        enabled
+                );
+                log.debug("Created new preference object with ID: {}", preference.getId());
+                repository.save(preference);
+                log.info("Saved new preference for user: {}, category: {}", userId, category);
+            }
         } catch (Exception e) {
             log.error("Error updating notification preferences - user: {}, category: {}, error: {}",
                     userId, category, e.getMessage(), e);

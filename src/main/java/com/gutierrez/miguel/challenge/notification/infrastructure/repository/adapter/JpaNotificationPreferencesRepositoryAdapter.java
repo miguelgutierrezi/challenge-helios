@@ -13,9 +13,12 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Adapter implementation for the NotificationPreferenceRepositoryPort interface.
- * This class handles the persistence of notification preferences using JPA.
+ * JPA implementation of the NotificationPreferenceRepositoryPort interface.
+ * This adapter handles the persistence of notification preferences using JPA repositories.
  * It converts between domain models and JPA entities using the NotificationPreferenceMapper.
+ * 
+ * The adapter follows the hexagonal architecture pattern, implementing the port interface
+ * and translating between domain models and infrastructure-specific entities.
  */
 @Component
 @RequiredArgsConstructor
@@ -27,9 +30,13 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
 
     /**
      * Saves a notification preference to the database.
-     * Converts the domain model to a JPA entity and persists it.
+     * This method performs the following steps:
+     * 1. Converts the domain model to a JPA entity
+     * 2. Persists the entity to the database
+     * 3. Logs the operation at appropriate levels
      *
      * @param preference The notification preference domain model to be saved
+     * @throws RuntimeException if there is an error during the save operation
      */
     @Override
     public void save(NotificationPreferences preference) {
@@ -49,10 +56,14 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
 
     /**
      * Retrieves all notification preferences for a specific user.
-     * Converts the JPA entities back to domain models.
+     * This method performs the following steps:
+     * 1. Queries the database for preferences matching the user ID
+     * 2. Converts the JPA entities to domain models
+     * 3. Logs the operation at appropriate levels
      *
      * @param userId The UUID of the user
      * @return List of notification preferences for the user
+     * @throws RuntimeException if there is an error during the retrieval operation
      */
     @Override
     public List<NotificationPreferences> findByUserId(UUID userId) {
@@ -80,11 +91,15 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
 
     /**
      * Checks if notifications are enabled for a specific user and category.
-     * Returns true if no preference is found (default behavior).
+     * This method performs the following steps:
+     * 1. Queries the database for a preference matching the user ID and category
+     * 2. Returns the enabled status if found, or true (default) if not found
+     * 3. Logs the operation at appropriate levels
      *
-     * @param userId   The UUID of the user
+     * @param userId The UUID of the user
      * @param category The notification category to check
      * @return true if notifications are enabled, false otherwise
+     * @throws RuntimeException if there is an error during the check operation
      */
     @Override
     public boolean isEnabled(UUID userId, NotificationCategory category) {
@@ -103,6 +118,32 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
         } catch (Exception e) {
             log.error("Error checking notification preference - user: {}, category: {}, error: {}",
                     userId, category, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public NotificationPreferences findByUserIdAndCategory(UUID userId, NotificationCategory category) {
+        log.debug("Finding notification preferences for user: {} and category {}", userId, category.name());
+
+        try {
+            NotificationPreferencesEntity entities = repository.findByUserIdAndCategory(userId, category)
+                    .orElse(null);
+            log.debug("Found notification preferences for user {} and category {}",
+                    userId, category.name());
+
+            if (entities == null) {
+                return null;
+            }
+
+            NotificationPreferences preferences = mapper.toDomain(entities);
+
+            log.debug("Converted entities to domain models for user {}", userId);
+
+            return preferences;
+        } catch (Exception e) {
+            log.error("Error finding notification preferences for user: {} and category {}, error: {}",
+                    userId, category.name(), e.getMessage(), e);
             throw e;
         }
     }
