@@ -11,42 +11,46 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 /**
- * Service responsible for creating new user accounts.
- * This service handles the business logic for creating and persisting new user records.
+ * Service for creating users.
+ * This service handles the business logic for creating new user accounts,
+ * including validation and persistence of user data.
+ *
+ * The service follows the hexagonal architecture pattern, using ports for external dependencies
+ * and focusing on the core business logic of user management.
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CreateUserService {
 
-    private final UserRepositoryPort repository;
+    private final UserRepositoryPort userRepository;
     private final UpdateNotificationPreferenceService notificationPreferenceService;
 
     /**
-     * Creates a new user account with the provided information.
-     * Generates a new UUID for the user and persists the record.
+     * Creates a new user in the system.
+     * This method handles the complete user creation process, including:
+     * 1. Generating a unique identifier for the user
+     * 2. Creating a new user with the provided details
+     * 3. Persisting the user data
+     * 4. Logging the operation at appropriate levels
      *
-     * @param name  The full name of the user
+     * @param name The name of the user
      * @param email The email address of the user
-     * @return The created User entity with its generated ID
+     * @return The created user
+     * @throws RuntimeException if there is an error creating the user
      */
     public User create(String name, String email) {
-        log.info("Creating new user account - name: {}, email: {}", name, email);
+        log.info("Creating new user with name: {}, email: {}", name, email);
 
         try {
-            UUID userId = UUID.randomUUID();
-            log.debug("Generated new UUID for user: {}", userId);
-
             User user = User.builder()
-                    .id(userId)
+                    .id(UUID.randomUUID())
                     .name(name)
                     .email(email)
                     .build();
-            log.debug("User object created with ID: {}", user.getId());
 
-            User savedUser = repository.save(user);
-            log.info("Successfully created user account - ID: {}, name: {}, email: {}",
-                    savedUser.getId(), savedUser.getName(), savedUser.getEmail());
+            User savedUser = userRepository.save(user);
+            log.info("Successfully created user with ID: {}", savedUser.getId());
 
             for (NotificationCategory category : NotificationCategory.values()) {
                 notificationPreferenceService.updatePreference(savedUser.getId(), category, true);
@@ -54,7 +58,7 @@ public class CreateUserService {
 
             return savedUser;
         } catch (Exception e) {
-            log.error("Error creating user account - name: {}, email: {}, error: {}",
+            log.error("Error creating user with name: {}, email: {}, error: {}",
                     name, email, e.getMessage(), e);
             throw e;
         }

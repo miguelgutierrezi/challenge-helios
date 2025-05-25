@@ -7,8 +7,6 @@ import com.gutierrez.miguel.challenge.user.infrastructure.dto.UserRequest;
 import com.gutierrez.miguel.challenge.user.infrastructure.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,38 +22,38 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Controller for managing users in the system.
- * Provides endpoints for creating and managing user accounts.
+ * REST controller for managing users.
+ * This controller provides endpoints for creating and retrieving users,
+ * handling user-related operations in the system.
+ *
+ * The controller follows REST principles and uses proper HTTP methods and status codes.
+ * All endpoints are documented using OpenAPI/Swagger annotations for API documentation.
  */
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-@Tag(name = "User", description = "User management APIs")
+@Tag(name = "Users", description = "APIs for managing users")
 public class UserController {
 
     private final CreateUserService createUserService;
     private final GetAllUsersService getAllUsersService;
 
     /**
-     * Creates a new user account.
+     * Creates a new user in the system.
+     * This endpoint allows registering new users with their basic information.
      *
      * @param request The user creation request containing name and email
-     * @return ResponseEntity containing the created user information
+     * @return ResponseEntity containing the created user details
      */
     @Operation(
-            summary = "Create a new user",
-            description = "Creates a new user account with the provided name and email"
+            summary = "Create user",
+            description = "Creates a new user with the provided name and email"
     )
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "User created successfully",
-                    content = @Content(schema = @Schema(implementation = UserResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request parameters"
-            )
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request parameters"),
+            @ApiResponse(responseCode = "409", description = "User with email already exists"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping
     public ResponseEntity<UserResponse> create(
@@ -73,29 +71,23 @@ public class UserController {
 
     /**
      * Retrieves all users from the system.
+     * This endpoint returns a list of all registered users.
      *
      * @return ResponseEntity containing a list of all users
      */
+    @GetMapping
     @Operation(
             summary = "Get all users",
-            description = "Retrieves a list of all users in the system"
+            description = "Retrieves a list of all registered users"
     )
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Successfully retrieved all users",
-                    content = @Content(schema = @Schema(implementation = UserResponse.class))
-            )
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<User> users = getAllUsersService.getAllUsers();
         List<UserResponse> response = users.stream()
-                .map(user -> new UserResponse(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail()
-                ))
+                .map(user -> new UserResponse(user.getId(), user.getName(), user.getEmail()))
                 .toList();
         return ResponseEntity.ok(response);
     }

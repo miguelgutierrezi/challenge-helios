@@ -1,7 +1,6 @@
 package com.gutierrez.miguel.challenge.notification.application.usecases;
 
 import com.gutierrez.miguel.challenge.notification.domain.model.Notification;
-import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationCategory;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationContent;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationRecipient;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationTimestamp;
@@ -17,68 +16,67 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Service responsible for sending notifications to users.
- * This service handles the business logic for creating and sending notifications,
- * including checking user preferences before sending.
+ * Service for sending notifications.
+ * This service handles the business logic for sending notifications to users,
+ * including preference checking, notification creation, and persistence.
+ *
+ * The service follows the hexagonal architecture pattern, using ports for external dependencies
+ * and focusing on the core business logic of notification management.
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SendNotificationService {
 
-    private final NotificationRepositoryPort repository;
+    private final NotificationRepositoryPort notificationRepository;
     private final NotificationSenderPort sender;
     private final NotificationPreferenceRepositoryPort preferenceRepository;
 
     /**
-     * Executes the notification sending process.
-     * This method performs the following steps:
-     * 1. Checks if the user has enabled notifications for the given category
-     * 2. If enabled, creates a new notification
-     * 3. Saves the notification to the repository
-     * 4. Sends the notification through the configured sender
+     * Sends a notification to a specific user.
+     * This method handles the complete notification sending process, including:
+     * 1. Checking if the user has enabled notifications for the given category
+     * 2. Creating a new notification with the provided details
+     * 3. Persisting the notification
+     * 4. Logging the operation at appropriate levels
      *
-     * @param recipientId The UUID of the notification recipient
-     * @param type The type of notification to be sent
-     * @param content The content/message of the notification
-     * @return The created and sent notification, or null if notifications are disabled for the category
+     * @param recipientId The UUID of the user who will receive the notification
+     * @param type The type of notification to send
+     * @param message The content of the notification
+     * @return The created notification
+     * @throws RuntimeException if there is an error sending the notification
      */
-    public Notification execute(UUID recipientId, NotificationType type, String content) {
-        log.info("Starting notification process for recipient: {}, type: {}", recipientId, type);
-        
-        NotificationCategory category = type.getCategory();
-        log.debug("Notification category determined: {}", category);
-
-        boolean isEnabled = preferenceRepository.isEnabled(recipientId, category);
-        log.debug("Notification preference check - recipient: {}, category: {}, enabled: {}", 
-                 recipientId, category, isEnabled);
-
-        if (!isEnabled) {
-            log.info("Notification skipped - recipient: {} has disabled notifications for category: {}", 
-                    recipientId, category);
-            return null;
-        }
-
-        Notification notification = new Notification(
-                UUID.randomUUID(),
-                new NotificationRecipient(recipientId),
-                new NotificationContent(content),
-                type,
-                new NotificationTimestamp(LocalDateTime.now()),
-                category
-        );
-        log.debug("Notification object created with ID: {}", notification.getId());
+    public Notification execute(UUID recipientId, NotificationType type, String message) {
+        log.info("Sending notification to user: {}, type: {}", recipientId, type);
 
         try {
-            repository.save(notification);
-            log.debug("Notification saved to repository with ID: {}", notification.getId());
-            
+            // Check if notifications are enabled for this category
+            boolean enabled = preferenceRepository.isEnabled(recipientId, type.getCategory());
+            if (!enabled) {
+                log.info("Notifications are disabled for user: {}, category: {}", 
+                        recipientId, type.getCategory());
+                return null;
+            }
+
+            // Create and save the notification
+            Notification notification = Notification.builder()
+                    .id(UUID.randomUUID())
+                    .recipient(new NotificationRecipient(recipientId))
+                    .content(new NotificationContent(message))
+                    .type(type)
+                    .timestamp(new NotificationTimestamp(LocalDateTime.now()))
+                    .category(type.getCategory())
+                    .build();
+
+            notificationRepository.save(notification);
+            log.info("Successfully sent notification to user: {}, type: {}", recipientId, type);
+
             sender.send(notification);
             log.info("Notification successfully sent to recipient: {}, ID: {}", recipientId, notification.getId());
-            
+
             return notification;
         } catch (Exception e) {
-            log.error("Error processing notification for recipient: {}, type: {}, error: {}", 
+            log.error("Error sending notification to user: {}, type: {}, error: {}",
                     recipientId, type, e.getMessage(), e);
             throw e;
         }

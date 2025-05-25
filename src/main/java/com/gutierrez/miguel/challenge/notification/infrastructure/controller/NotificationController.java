@@ -6,11 +6,10 @@ import com.gutierrez.miguel.challenge.notification.infrastructure.controller.dto
 import com.gutierrez.miguel.challenge.notification.infrastructure.controller.dto.SendNotificationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,52 +18,58 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for managing notifications in the system.
- * Provides endpoints for sending notifications to users.
+ * REST controller for managing notifications.
+ * This controller provides endpoints for sending notifications to users,
+ * supporting different types of notifications such as game events, social events, etc.
+ *
+ * The controller follows REST principles and uses proper HTTP methods and status codes.
+ * All endpoints are documented using OpenAPI/Swagger annotations for API documentation.
  */
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
-@Tag(name = "Notification", description = "Notification management APIs")
+@Tag(name = "Notifications", description = "APIs for sending and managing notifications")
 public class NotificationController {
 
     private final SendNotificationService sendNotificationService;
 
     /**
-     * Sends a notification to a specific recipient.
+     * Sends a notification to a specific user.
+     * This endpoint allows sending different types of notifications with custom messages.
      *
-     * @param request The notification request containing recipient ID, type, and message
-     * @return ResponseEntity containing the created notification
+     * @param request The notification request containing recipient, type, and message
+     * @return ResponseEntity containing the sent notification details
      */
+    @PostMapping
     @Operation(
-        summary = "Send a notification",
-        description = "Sends a notification to a specific recipient with the given type and message"
+            summary = "Send notification",
+            description = "Sends a notification to a specific user with the given type and message"
     )
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Notification sent successfully",
-            content = @Content(schema = @Schema(implementation = Notification.class))
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid request parameters"
-        )
+            @ApiResponse(responseCode = "200", description = "Notification sent successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request parameters"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping
     public ResponseEntity<SendNotificationResponse> sendNotification(
-            @Parameter(description = "Notification request details", required = true)
-            @RequestBody SendNotificationRequest request) {
-        Notification notification = sendNotificationService
-                .execute(request.recipientId(), request.type(), request.message());
-        SendNotificationResponse response = SendNotificationResponse.builder()
-                .id(notification.getId())
-                .recipient(notification.getRecipient().value())
-                .content(notification.getContent().value())
-                .type(notification.getType().name())
-                .category(notification.getCategory().name())
-                .timestamp(notification.getTimestamp().value())
-                .build();
+            @Parameter(description = "Notification details", required = true)
+            @Valid @RequestBody SendNotificationRequest request
+    ) {
+        Notification notification = sendNotificationService.execute(
+                request.recipientId(),
+                request.type(),
+                request.message()
+        );
+
+        SendNotificationResponse response = new SendNotificationResponse(
+                notification.getId(),
+                notification.getRecipient().value(),
+                notification.getContent().value(),
+                notification.getType().name(),
+                notification.getTimestamp().value(),
+                notification.getCategory().name()
+        );
+
         return ResponseEntity.ok(response);
     }
 }
