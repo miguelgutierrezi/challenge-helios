@@ -1,4 +1,4 @@
-CREATE TABLE cardholders
+CREATE TABLE users
 (
     id      UUID PRIMARY KEY,
     name    VARCHAR(100)   NOT NULL,
@@ -13,14 +13,14 @@ CREATE TABLE notifications
     category  VARCHAR(255),
     content   VARCHAR(255),
     timestamp TIMESTAMP,
-    FOREIGN KEY (recipient) REFERENCES cardholders (id)
+    FOREIGN KEY (recipient) REFERENCES users (id)
 );
 
 CREATE TABLE notification_preferences
 (
     id            UUID PRIMARY KEY,
-    cardholder_id UUID    NOT NULL,
+    user_id UUID    NOT NULL,
     category      VARCHAR(50) NOT NULL,
     enabled       BOOLEAN     NOT NULL,
-    FOREIGN KEY (cardholder_id) REFERENCES cardholders (id)
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );

@@ -8,6 +8,6 @@ import java.util.UUID;
 
 public interface NotificationPreferenceRepositoryPort {
     void save(NotificationPreferences preference);
-    List<NotificationPreferences> findByCardholderId(UUID cardholderId);
-    boolean isEnabled(UUID cardholderId, NotificationCategory category);
+    List<NotificationPreferences> findByUserId(UUID userId);
+    boolean isEnabled(UUID userId, NotificationCategory category);
 }

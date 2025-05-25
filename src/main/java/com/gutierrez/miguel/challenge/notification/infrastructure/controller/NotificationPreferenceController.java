@@ -47,7 +47,7 @@ public class NotificationPreferenceController {
     public ResponseEntity<Void> updatePreference(
             @Parameter(description = "Notification preference update details", required = true)
             @RequestBody UpdateNotificationPreferenceRequest request) {
-        updateService.updatePreference(request.cardholderId(), request.category(), request.enabled());
+        updateService.updatePreference(request.userId(), request.category(), request.enabled());
         return ResponseEntity.ok().build();
     }
 }

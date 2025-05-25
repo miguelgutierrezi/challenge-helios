@@ -1,11 +1,11 @@
 package com.gutierrez.miguel.challenge.notification.infrastructure.messaging.simulation;
 
-import com.gutierrez.miguel.challenge.cardholder.domain.model.Cardholder;
-import com.gutierrez.miguel.challenge.cardholder.domain.ports.CardholderRepositoryPort;
 import com.gutierrez.miguel.challenge.notification.application.usecases.SendNotificationService;
 import com.gutierrez.miguel.challenge.notification.domain.model.Notification;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationCategory;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationType;
+import com.gutierrez.miguel.challenge.user.domain.model.User;
+import com.gutierrez.miguel.challenge.user.domain.ports.UserRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class MockNotificationEventSimulator {
 
     private final SendNotificationService sendNotificationService;
-    private final CardholderRepositoryPort cardholderRepository;
+    private final UserRepositoryPort userRepository;
     private final Random random = new Random();
 
     private static final Map<NotificationCategory, List<NotificationType>> NOTIFICATION_CATEGORIES = Map.of(
@@ -61,13 +61,13 @@ public class MockNotificationEventSimulator {
 
         String content = SAMPLE_MESSAGES.get(random.nextInt(SAMPLE_MESSAGES.size()));
 
-        List<UUID> cardholders = cardholderRepository.findAll().stream().map(Cardholder::getId).toList();
-        if (cardholders.isEmpty()) {
-            log.warn("No cardholders found. Skipping simulation.");
+        List<UUID> users = userRepository.findAll().stream().map(User::getId).toList();
+        if (users.isEmpty()) {
+            log.warn("No users found. Skipping simulation.");
             return;
         }
 
-        UUID randomUUID = cardholders.get(random.nextInt(cardholders.size()));
+        UUID randomUUID = users.get(random.nextInt(users.size()));
 
         Notification notification = sendNotificationService.execute(
                 randomUUID,

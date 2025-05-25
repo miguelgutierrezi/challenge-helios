@@ -26,7 +26,7 @@ public class NotificationPreferencesEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID cardholderId;
+    private UUID userId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

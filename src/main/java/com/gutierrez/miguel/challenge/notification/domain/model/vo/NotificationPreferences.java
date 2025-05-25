@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class NotificationPreferences {
     private UUID id;
-    private UUID cardholderId;
+    private UUID userId;
     private NotificationCategory category;
     private boolean enabled;
 }

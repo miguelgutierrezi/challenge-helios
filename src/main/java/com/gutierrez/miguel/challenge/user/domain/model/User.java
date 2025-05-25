@@ -1,4 +1,4 @@
-package com.gutierrez.miguel.challenge.cardholder.domain.model;
+package com.gutierrez.miguel.challenge.user.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,12 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Domain model representing a user in the system.
+ * Contains the core user information and business rules.
+ */
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class Cardholder {
+@NoArgsConstructor
+public class User {
     private UUID id;
     private String name;
     private String email;
-}
+} 

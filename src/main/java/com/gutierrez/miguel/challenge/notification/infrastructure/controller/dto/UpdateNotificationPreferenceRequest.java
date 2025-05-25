@@ -11,8 +11,8 @@ import java.util.UUID;
  */
 @Schema(description = "Request object for updating notification preferences")
 public record UpdateNotificationPreferenceRequest(
-    @Schema(description = "Unique identifier of the cardholder", example = "123e4567-e89b-12d3-a456-426614174000")
-    UUID cardholderId,
+    @Schema(description = "Unique identifier of the user", example = "123e4567-e89b-12d3-a456-426614174000")
+    UUID userId,
     
     @Schema(description = "Category of notifications to update preferences for", example = "GAME_EVENT")
     NotificationCategory category,

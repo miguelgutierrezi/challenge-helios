@@ -25,29 +25,29 @@ public class UpdateNotificationPreferenceService {
      * Updates the notification preferences for a specific user and category.
      * Creates a new preference entry if it doesn't exist, or updates the existing one.
      *
-     * @param cardholderId The UUID of the cardholder whose preferences are being updated
+     * @param userId   The UUID of the user whose preferences are being updated
      * @param category The notification category to update preferences for
-     * @param enabled Whether notifications for this category should be enabled
+     * @param enabled  Whether notifications for this category should be enabled
      */
-    public void updatePreference(UUID cardholderId, NotificationCategory category, boolean enabled) {
-        log.info("Updating notification preferences - cardholder: {}, category: {}, enabled: {}", 
-                cardholderId, category, enabled);
-        
+    public void updatePreference(UUID userId, NotificationCategory category, boolean enabled) {
+        log.info("Updating notification preferences - user: {}, category: {}, enabled: {}",
+                userId, category, enabled);
+
         try {
             NotificationPreferences preference = new NotificationPreferences(
-                    UUID.randomUUID(), 
-                    cardholderId, 
-                    category, 
+                    UUID.randomUUID(),
+                    userId,
+                    category,
                     enabled
             );
             log.debug("Created preference object with ID: {}", preference.getId());
-            
+
             repository.save(preference);
-            log.info("Successfully updated notification preferences for cardholder: {}, category: {}", 
-                    cardholderId, category);
+            log.info("Successfully updated notification preferences for user: {}, category: {}",
+                    userId, category);
         } catch (Exception e) {
-            log.error("Error updating notification preferences - cardholder: {}, category: {}, error: {}", 
-                    cardholderId, category, e.getMessage(), e);
+            log.error("Error updating notification preferences - user: {}, category: {}, error: {}",
+                    userId, category, e.getMessage(), e);
             throw e;
         }
     }

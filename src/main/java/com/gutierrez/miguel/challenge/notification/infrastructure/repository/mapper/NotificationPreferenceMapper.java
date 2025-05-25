@@ -21,7 +21,7 @@ public class NotificationPreferenceMapper {
     public NotificationPreferencesEntity toEntity(NotificationPreferences preference) {
         return NotificationPreferencesEntity.builder()
                 .id(preference.getId())
-                .cardholderId(preference.getCardholderId())
+                .userId(preference.getUserId())
                 .category(preference.getCategory())
                 .enabled(preference.isEnabled())
                 .build();
@@ -37,7 +37,7 @@ public class NotificationPreferenceMapper {
     public NotificationPreferences toDomain(NotificationPreferencesEntity entity) {
         return NotificationPreferences.builder()
                 .id(entity.getId())
-                .cardholderId(entity.getCardholderId())
+                .userId(entity.getUserId())
                 .category(entity.getCategory())
                 .enabled(entity.isEnabled())
                 .build();

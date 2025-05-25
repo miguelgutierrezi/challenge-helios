@@ -35,74 +35,74 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
     public void save(NotificationPreferences preference) {
         log.debug("Converting notification preference to entity - ID: {}", preference.getId());
         NotificationPreferencesEntity entity = mapper.toEntity(preference);
-        
+
         try {
             log.debug("Saving notification preference to database - ID: {}", entity.getId());
             repository.save(entity);
             log.debug("Successfully saved notification preference to database - ID: {}", entity.getId());
         } catch (Exception e) {
-            log.error("Error saving notification preference to database - ID: {}, error: {}", 
+            log.error("Error saving notification preference to database - ID: {}, error: {}",
                     preference.getId(), e.getMessage(), e);
             throw e;
         }
     }
 
     /**
-     * Retrieves all notification preferences for a specific cardholder.
+     * Retrieves all notification preferences for a specific user.
      * Converts the JPA entities back to domain models.
      *
-     * @param cardholderId The UUID of the cardholder
-     * @return List of notification preferences for the cardholder
+     * @param userId The UUID of the user
+     * @return List of notification preferences for the user
      */
     @Override
-    public List<NotificationPreferences> findByCardholderId(UUID cardholderId) {
-        log.debug("Finding notification preferences for cardholder: {}", cardholderId);
-        
+    public List<NotificationPreferences> findByUserId(UUID userId) {
+        log.debug("Finding notification preferences for user: {}", userId);
+
         try {
-            List<NotificationPreferencesEntity> entities = repository.findByCardholderId(cardholderId);
-            log.debug("Found {} notification preferences for cardholder: {}", 
-                    entities.size(), cardholderId);
-            
+            List<NotificationPreferencesEntity> entities = repository.findByUserId(userId);
+            log.debug("Found {} notification preferences for user: {}",
+                    entities.size(), userId);
+
             List<NotificationPreferences> preferences = entities.stream()
                     .map(mapper::toDomain)
                     .toList();
-            
-            log.debug("Converted {} entities to domain models for cardholder: {}", 
-                    preferences.size(), cardholderId);
-            
+
+            log.debug("Converted {} entities to domain models for user: {}",
+                    preferences.size(), userId);
+
             return preferences;
         } catch (Exception e) {
-            log.error("Error finding notification preferences for cardholder: {}, error: {}", 
-                    cardholderId, e.getMessage(), e);
+            log.error("Error finding notification preferences for user: {}, error: {}",
+                    userId, e.getMessage(), e);
             throw e;
         }
     }
 
     /**
-     * Checks if notifications are enabled for a specific cardholder and category.
+     * Checks if notifications are enabled for a specific user and category.
      * Returns true if no preference is found (default behavior).
      *
-     * @param cardholderId The UUID of the cardholder
+     * @param userId   The UUID of the user
      * @param category The notification category to check
      * @return true if notifications are enabled, false otherwise
      */
     @Override
-    public boolean isEnabled(UUID cardholderId, NotificationCategory category) {
-        log.debug("Checking if notifications are enabled for cardholder: {}, category: {}", 
-                cardholderId, category);
-        
+    public boolean isEnabled(UUID userId, NotificationCategory category) {
+        log.debug("Checking if notifications are enabled for user: {}, category: {}",
+                userId, category);
+
         try {
-            boolean enabled = repository.findByCardholderIdAndCategory(cardholderId, category)
+            boolean enabled = repository.findByUserIdAndCategory(userId, category)
                     .map(NotificationPreferencesEntity::isEnabled)
                     .orElse(true);
-            
-            log.debug("Notification preference check result - cardholder: {}, category: {}, enabled: {}", 
-                    cardholderId, category, enabled);
-            
+
+            log.debug("Notification preference check result - user: {}, category: {}, enabled: {}",
+                    userId, category, enabled);
+
             return enabled;
         } catch (Exception e) {
-            log.error("Error checking notification preference - cardholder: {}, category: {}, error: {}", 
-                    cardholderId, category, e.getMessage(), e);
+            log.error("Error checking notification preference - user: {}, category: {}, error: {}",
+                    userId, category, e.getMessage(), e);
             throw e;
         }
     }

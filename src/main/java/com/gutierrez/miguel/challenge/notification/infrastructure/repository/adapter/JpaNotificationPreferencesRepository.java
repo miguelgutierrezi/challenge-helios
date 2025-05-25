@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface JpaNotificationPreferencesRepository extends JpaRepository<NotificationPreferencesEntity, UUID> {
 
-    List<NotificationPreferencesEntity> findByCardholderId(UUID cardholderId);
+    List<NotificationPreferencesEntity> findByUserId(UUID userId);
 
-    Optional<NotificationPreferencesEntity> findByCardholderIdAndCategory(UUID cardholderId, NotificationCategory category);
+    Optional<NotificationPreferencesEntity> findByUserIdAndCategory(UUID userId, NotificationCategory category);
 }
