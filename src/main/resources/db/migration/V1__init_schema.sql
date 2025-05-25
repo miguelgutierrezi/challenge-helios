@@ -1,9 +1,8 @@
 CREATE TABLE cardholders
 (
-    id      CHAR(36) PRIMARY KEY,
+    id      UUID PRIMARY KEY,
     name    VARCHAR(100)   NOT NULL,
-    email   VARCHAR(100)   NOT NULL,
-    balance DECIMAL(10, 2) NOT NULL
+    email   VARCHAR(100)   NOT NULL
 );
 
 CREATE TABLE notifications
@@ -19,8 +18,8 @@ CREATE TABLE notifications
 
 CREATE TABLE notification_preferences
 (
-    id            CHAR(36) PRIMARY KEY,
-    cardholder_id CHAR(36)    NOT NULL,
+    id            UUID PRIMARY KEY,
+    cardholder_id UUID    NOT NULL,
     category      VARCHAR(50) NOT NULL,
     enabled       BOOLEAN     NOT NULL,
     FOREIGN KEY (cardholder_id) REFERENCES cardholders (id)

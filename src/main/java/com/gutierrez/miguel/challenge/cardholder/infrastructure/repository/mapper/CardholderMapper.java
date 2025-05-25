@@ -1,7 +1,6 @@
 package com.gutierrez.miguel.challenge.cardholder.infrastructure.repository.mapper;
 
 import com.gutierrez.miguel.challenge.cardholder.domain.model.Cardholder;
-import com.gutierrez.miguel.challenge.cardholder.domain.model.vo.Balance;
 import com.gutierrez.miguel.challenge.cardholder.infrastructure.repository.entity.CardholderEntity;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ public class CardholderMapper {
                 .id(cardholder.getId())
                 .name(cardholder.getName())
                 .email(cardholder.getEmail())
-                .balance(cardholder.getBalance().value())
                 .build();
     }
 
@@ -22,7 +20,6 @@ public class CardholderMapper {
                 .id(cardholderEntity.getId())
                 .name(cardholderEntity.getName())
                 .email(cardholderEntity.getEmail())
-                .balance(new Balance(cardholderEntity.getBalance()))
                 .build();
     }
 
