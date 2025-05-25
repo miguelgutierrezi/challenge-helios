@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Adapter implementation for the NotificationPreferenceRepositoryPort interface.
+ * This class handles the persistence of notification preferences using JPA.
+ * It converts between domain models and JPA entities using the NotificationPreferenceMapper.
+ */
 @Component
 @RequiredArgsConstructor
 public class JpaNotificationPreferencesRepositoryAdapter implements NotificationPreferenceRepositoryPort {
@@ -18,11 +23,24 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
     private final JpaNotificationPreferencesRepository repository;
     private final NotificationPreferenceMapper mapper;
 
+    /**
+     * Saves a notification preference to the database.
+     * Converts the domain model to a JPA entity and persists it.
+     *
+     * @param preference The notification preference domain model to be saved
+     */
     @Override
     public void save(NotificationPreferences preference) {
         repository.save(mapper.toEntity(preference));
     }
 
+    /**
+     * Retrieves all notification preferences for a specific cardholder.
+     * Converts the JPA entities back to domain models.
+     *
+     * @param cardholderId The UUID of the cardholder
+     * @return List of notification preferences for the cardholder
+     */
     @Override
     public List<NotificationPreferences> findByCardholderId(UUID cardholderId) {
         return repository.findByCardholderId(cardholderId).stream()
@@ -30,6 +48,14 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
                 .toList();
     }
 
+    /**
+     * Checks if notifications are enabled for a specific cardholder and category.
+     * Returns true if no preference is found (default behavior).
+     *
+     * @param cardholderId The UUID of the cardholder
+     * @param category The notification category to check
+     * @return true if notifications are enabled, false otherwise
+     */
     @Override
     public boolean isEnabled(UUID cardholderId, NotificationCategory category) {
         return repository.findByCardholderIdAndCategory(cardholderId, category)
