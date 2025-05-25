@@ -1,4 +1,9 @@
 package com.gutierrez.miguel.challenge.transaction.domain.ports;
 
-public class TransactionRepositoryPort {
+import com.gutierrez.miguel.challenge.transaction.domain.model.Transaction;
+
+public interface TransactionRepositoryPort {
+
+    Transaction save(Transaction transaction);
+
 }
