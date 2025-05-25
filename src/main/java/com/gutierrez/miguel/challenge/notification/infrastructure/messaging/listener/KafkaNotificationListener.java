@@ -1,7 +1,5 @@
 package com.gutierrez.miguel.challenge.notification.infrastructure.messaging.listener;
 
-import com.gutierrez.miguel.challenge.notification.application.usecases.SendNotificationService;
-import com.gutierrez.miguel.challenge.notification.domain.model.Notification;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +14,6 @@ import java.util.UUID;
 @Profile("docker")
 @RequiredArgsConstructor
 public class KafkaNotificationListener {
-
-    private final SendNotificationService sendNotificationService;
 
     @KafkaListener(
             topics = "${app.kafka.topic}",
