@@ -1,4 +1,7 @@
 package com.gutierrez.miguel.challenge.cardholder.domain.ports;
 
-public class CardholderRepositoryPort {
+import com.gutierrez.miguel.challenge.cardholder.domain.model.Cardholder;
+
+public interface CardholderRepositoryPort {
+    Cardholder save(Cardholder cardholder);
 }
