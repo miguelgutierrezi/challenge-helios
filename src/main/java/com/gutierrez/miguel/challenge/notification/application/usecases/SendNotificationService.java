@@ -44,12 +44,18 @@ public class SendNotificationService {
      * @return The created and sent notification, or null if notifications are disabled for the category
      */
     public Notification execute(UUID recipientId, NotificationType type, String content) {
+        log.info("Starting notification process for recipient: {}, type: {}", recipientId, type);
+        
         NotificationCategory category = type.getCategory();
+        log.debug("Notification category determined: {}", category);
 
         boolean isEnabled = preferenceRepository.isEnabled(recipientId, category);
+        log.debug("Notification preference check - recipient: {}, category: {}, enabled: {}", 
+                 recipientId, category, isEnabled);
 
         if (!isEnabled) {
-            log.info("Notification for {} skipped due to preference for category {}", recipientId, category);
+            log.info("Notification skipped - recipient: {} has disabled notifications for category: {}", 
+                    recipientId, category);
             return null;
         }
 
@@ -61,11 +67,20 @@ public class SendNotificationService {
                 new NotificationTimestamp(LocalDateTime.now()),
                 category
         );
+        log.debug("Notification object created with ID: {}", notification.getId());
 
-        repository.save(notification);
-        sender.send(notification);
-
-        log.info("Notification sent to {}", recipientId);
-        return notification;
+        try {
+            repository.save(notification);
+            log.debug("Notification saved to repository with ID: {}", notification.getId());
+            
+            sender.send(notification);
+            log.info("Notification successfully sent to recipient: {}, ID: {}", recipientId, notification.getId());
+            
+            return notification;
+        } catch (Exception e) {
+            log.error("Error processing notification for recipient: {}, type: {}, error: {}", 
+                    recipientId, type, e.getMessage(), e);
+            throw e;
+        }
     }
 }

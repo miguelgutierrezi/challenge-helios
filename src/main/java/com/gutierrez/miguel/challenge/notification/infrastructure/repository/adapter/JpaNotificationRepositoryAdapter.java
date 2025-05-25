@@ -5,6 +5,7 @@ import com.gutierrez.miguel.challenge.notification.domain.ports.NotificationRepo
 import com.gutierrez.miguel.challenge.notification.infrastructure.repository.entity.NotificationEntity;
 import com.gutierrez.miguel.challenge.notification.infrastructure.repository.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JpaNotificationRepositoryAdapter implements NotificationRepositoryPort {
 
     private final JpaNotificationRepository jpaRepository;
@@ -28,8 +30,22 @@ public class JpaNotificationRepositoryAdapter implements NotificationRepositoryP
      */
     @Override
     public Notification save(Notification notification) {
+        log.debug("Converting notification to entity - ID: {}", notification.getId());
         NotificationEntity entity = mapper.toEntity(notification);
-        NotificationEntity saved = jpaRepository.save(entity);
-        return mapper.toDomain(saved);
+        
+        try {
+            log.debug("Saving notification entity to database - ID: {}", entity.getId());
+            NotificationEntity saved = jpaRepository.save(entity);
+            log.debug("Successfully saved notification to database - ID: {}", saved.getId());
+            
+            Notification domainNotification = mapper.toDomain(saved);
+            log.debug("Converted saved entity back to domain model - ID: {}", domainNotification.getId());
+            
+            return domainNotification;
+        } catch (Exception e) {
+            log.error("Error saving notification to database - ID: {}, error: {}", 
+                    notification.getId(), e.getMessage(), e);
+            throw e;
+        }
     }
 }

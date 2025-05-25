@@ -28,11 +28,28 @@ public class CreateCardHolderService {
      * @return The created Cardholder entity with its generated ID
      */
     public Cardholder create(String name, String email) {
-        Cardholder cardholder = Cardholder.builder()
-                .id(UUID.randomUUID())
-                .name(name)
-                .email(email)
-                .build();
-        return repository.save(cardholder);
+        log.info("Creating new cardholder account - name: {}, email: {}", name, email);
+        
+        try {
+            UUID cardholderId = UUID.randomUUID();
+            log.debug("Generated new UUID for cardholder: {}", cardholderId);
+            
+            Cardholder cardholder = Cardholder.builder()
+                    .id(cardholderId)
+                    .name(name)
+                    .email(email)
+                    .build();
+            log.debug("Cardholder object created with ID: {}", cardholder.getId());
+            
+            Cardholder savedCardholder = repository.save(cardholder);
+            log.info("Successfully created cardholder account - ID: {}, name: {}, email: {}", 
+                    savedCardholder.getId(), savedCardholder.getName(), savedCardholder.getEmail());
+            
+            return savedCardholder;
+        } catch (Exception e) {
+            log.error("Error creating cardholder account - name: {}, email: {}, error: {}", 
+                    name, email, e.getMessage(), e);
+            throw e;
+        }
     }
 }

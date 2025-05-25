@@ -4,6 +4,7 @@ import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationC
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationPreferences;
 import com.gutierrez.miguel.challenge.notification.domain.ports.NotificationPreferenceRepositoryPort;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -15,6 +16,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateNotificationPreferenceService {
 
     private final NotificationPreferenceRepositoryPort repository;
@@ -28,7 +30,25 @@ public class UpdateNotificationPreferenceService {
      * @param enabled Whether notifications for this category should be enabled
      */
     public void updatePreference(UUID cardholderId, NotificationCategory category, boolean enabled) {
-        NotificationPreferences preference = new NotificationPreferences(UUID.randomUUID(), cardholderId, category, enabled);
-        repository.save(preference);
+        log.info("Updating notification preferences - cardholder: {}, category: {}, enabled: {}", 
+                cardholderId, category, enabled);
+        
+        try {
+            NotificationPreferences preference = new NotificationPreferences(
+                    UUID.randomUUID(), 
+                    cardholderId, 
+                    category, 
+                    enabled
+            );
+            log.debug("Created preference object with ID: {}", preference.getId());
+            
+            repository.save(preference);
+            log.info("Successfully updated notification preferences for cardholder: {}, category: {}", 
+                    cardholderId, category);
+        } catch (Exception e) {
+            log.error("Error updating notification preferences - cardholder: {}, category: {}, error: {}", 
+                    cardholderId, category, e.getMessage(), e);
+            throw e;
+        }
     }
 }
