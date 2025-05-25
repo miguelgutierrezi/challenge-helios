@@ -17,13 +17,16 @@ import java.util.Map;
 @Profile("docker")
 public class KafkaListenerConfig {
 
+    @Value("${spring.kafka.consumer.group-id}")
+    private String groupIdConfig;
+
     @Bean
     public ConsumerFactory<String, String> consumerFactory(
             @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers
     ) {
         Map<String, Object> config = new HashMap<>();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "gaming-notification-group");
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(config);

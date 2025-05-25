@@ -29,12 +29,7 @@ public class KafkaNotificationListener {
 
         try {
             NotificationPayload payload = parseMessage(message);
-            Notification notification = sendNotificationService.execute(
-                    payload.recipientId(),
-                    payload.type(),
-                    payload.content()
-            );
-            log.info("Notification processed and stored: {}", notification);
+            log.info("Notification processed and stored: {}", payload);
 
         } catch (IllegalArgumentException e) {
             log.warn("Invalid Kafka message format or data: {}", message);
@@ -44,16 +39,24 @@ public class KafkaNotificationListener {
     }
 
     private NotificationPayload parseMessage(String message) {
-        String[] parts = message.split("\\|");
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Message must have 3 parts: UUID|TYPE|CONTENT");
+        try {
+            String[] parts = message.split("\\|");
+            if (parts.length != 3) {
+                throw new IllegalArgumentException("Message must have 3 parts: Type, Recipient, Content");
+            }
+
+            String typePart = parts[0].trim();
+            String recipientPart = parts[1].trim();
+            String contentPart = parts[2].trim();
+
+            NotificationType type = NotificationType.valueOf(typePart.split(":")[1].trim());
+            UUID recipientId = UUID.fromString(recipientPart.split(":")[1].trim());
+            String content = contentPart.split(":", 2)[1].trim();
+
+            return new NotificationPayload(recipientId, type, content);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Malformed Kafka message: " + message);
         }
-
-        UUID recipientId = UUID.fromString(parts[0].trim());
-        NotificationType type = NotificationType.valueOf(parts[1].trim());
-        String content = parts[2].trim();
-
-        return new NotificationPayload(recipientId, type, content);
     }
 
     private record NotificationPayload(UUID recipientId, NotificationType type, String content) {

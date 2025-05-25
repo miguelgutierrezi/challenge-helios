@@ -17,7 +17,7 @@ public class KafkaNotificationSenderAdapter implements NotificationSenderPort {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    @Value("${spring.kafka.consumer.group-id}")
+    @Value("${app.kafka.topic}")
     private String topic;
 
     @Override
@@ -29,6 +29,6 @@ public class KafkaNotificationSenderAdapter implements NotificationSenderPort {
         );
 
         kafkaTemplate.send(topic, message);
-        log.info("Notification sent to Kafka: {}", message);
+        log.info("Notification sent to Kafka {} and topic {}", message, topic);
     }
 }
