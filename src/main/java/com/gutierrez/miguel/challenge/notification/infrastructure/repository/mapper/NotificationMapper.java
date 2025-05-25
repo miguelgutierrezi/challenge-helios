@@ -1,6 +1,7 @@
 package com.gutierrez.miguel.challenge.notification.infrastructure.repository.mapper;
 
 import com.gutierrez.miguel.challenge.notification.domain.model.Notification;
+import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationCategory;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationContent;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationRecipient;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationTimestamp;
@@ -18,6 +19,7 @@ public class NotificationMapper {
                 .content(notification.getContent().value())
                 .recipient(notification.getRecipient().value())
                 .timestamp(notification.getTimestamp().value())
+                .category(notification.getCategory().name())
                 .build();
     }
 
@@ -28,6 +30,7 @@ public class NotificationMapper {
                 .content(new NotificationContent(entity.getContent()))
                 .recipient(new NotificationRecipient(entity.getRecipient()))
                 .timestamp(new NotificationTimestamp(entity.getTimestamp()))
+                .category(NotificationCategory.valueOf(entity.getCategory()))
                 .build();
     }
 }

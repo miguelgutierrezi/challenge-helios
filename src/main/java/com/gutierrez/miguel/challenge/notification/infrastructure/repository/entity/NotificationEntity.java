@@ -29,4 +29,6 @@ public class NotificationEntity {
     private UUID recipient;
 
     private LocalDateTime timestamp;
+
+    private String category;
 }

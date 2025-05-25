@@ -1,5 +1,6 @@
 package com.gutierrez.miguel.challenge.notification.domain.model;
 
+import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationCategory;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationContent;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationRecipient;
 import com.gutierrez.miguel.challenge.notification.domain.model.vo.NotificationTimestamp;
@@ -21,4 +22,5 @@ public class Notification {
     private NotificationContent content;
     private NotificationType type;
     private NotificationTimestamp timestamp;
+    private NotificationCategory category;
 }

@@ -8,6 +8,7 @@ import com.gutierrez.miguel.challenge.cardholder.infrastructure.repository.mappe
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -30,5 +31,12 @@ public class JpaCardholderRepositoryAdapter implements CardholderRepositoryPort 
         return repository.findById(id)
                 .map(cardholderMapper::toDomain)
                 .orElseThrow(() -> new CardholderNotFoundException("Cardholder with id: %d not found", id));
+    }
+
+    @Override
+    public List<Cardholder> findAll() {
+        return repository.findAll().stream()
+                .map(cardholderMapper::toDomain)
+                .toList();
     }
 }

@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: docker
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/gaming_platform_db}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -21,3 +24,7 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+app:
+  kafka:
+    topic: game-notifications
