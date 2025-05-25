@@ -44,5 +44,15 @@ public interface NotificationPreferenceRepositoryPort {
      */
     boolean isEnabled(UUID userId, NotificationCategory category);
 
+    /**
+     * Retrieves a specific notification preference for a user and category.
+     * This method is used to find the exact preference configuration for a given
+     * user and notification category combination.
+     *
+     * @param userId The UUID of the user
+     * @param category The notification category to find
+     * @return The notification preference if found, null otherwise
+     * @throws RuntimeException if there is an error retrieving the preference
+     */
     NotificationPreferences findByUserIdAndCategory(UUID userId, NotificationCategory category);
 }

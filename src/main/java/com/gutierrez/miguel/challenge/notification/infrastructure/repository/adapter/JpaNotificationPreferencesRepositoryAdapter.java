@@ -122,6 +122,19 @@ public class JpaNotificationPreferencesRepositoryAdapter implements Notification
         }
     }
 
+    /**
+     * Retrieves a specific notification preference for a user and category.
+     * This method performs the following steps:
+     * 1. Queries the database for a preference matching the user ID and category
+     * 2. Converts the JPA entity to a domain model if found
+     * 3. Returns null if no preference is found
+     * 4. Logs the operation at appropriate levels
+     *
+     * @param userId The UUID of the user
+     * @param category The notification category to find
+     * @return The notification preference if found, null otherwise
+     * @throws RuntimeException if there is an error during the retrieval operation
+     */
     @Override
     public NotificationPreferences findByUserIdAndCategory(UUID userId, NotificationCategory category) {
         log.debug("Finding notification preferences for user: {} and category {}", userId, category.name());
