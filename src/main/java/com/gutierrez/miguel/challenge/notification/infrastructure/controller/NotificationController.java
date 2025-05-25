@@ -3,6 +3,7 @@ package com.gutierrez.miguel.challenge.notification.infrastructure.controller;
 import com.gutierrez.miguel.challenge.notification.application.usecases.SendNotificationService;
 import com.gutierrez.miguel.challenge.notification.domain.model.Notification;
 import com.gutierrez.miguel.challenge.notification.infrastructure.controller.dto.SendNotificationRequest;
+import com.gutierrez.miguel.challenge.notification.infrastructure.controller.dto.SendNotificationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -51,10 +52,19 @@ public class NotificationController {
         )
     })
     @PostMapping
-    public ResponseEntity<Notification> sendNotification(
+    public ResponseEntity<SendNotificationResponse> sendNotification(
             @Parameter(description = "Notification request details", required = true)
             @RequestBody SendNotificationRequest request) {
-        return ResponseEntity.ok(sendNotificationService
-                .execute(request.recipientId(), request.type(), request.message()));
+        Notification notification = sendNotificationService
+                .execute(request.recipientId(), request.type(), request.message());
+        SendNotificationResponse response = SendNotificationResponse.builder()
+                .id(notification.getId())
+                .recipient(notification.getRecipient().value())
+                .content(notification.getContent().value())
+                .type(notification.getType().name())
+                .category(notification.getCategory().name())
+                .timestamp(notification.getTimestamp().value())
+                .build();
+        return ResponseEntity.ok(response);
     }
 }
