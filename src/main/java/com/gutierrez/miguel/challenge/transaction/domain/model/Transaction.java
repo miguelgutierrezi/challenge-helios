@@ -18,5 +18,5 @@ public class Transaction {
     private UUID cardholderId;
     private TransactionAmount amount;
     private String description;
-    private LocalDateTime timestamp;
+    private LocalDateTime date;
 }

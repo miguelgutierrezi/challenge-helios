@@ -1,7 +1,6 @@
 package com.gutierrez.miguel.challenge.transaction.application.usecases;
 
 import com.gutierrez.miguel.challenge.cardholder.domain.model.Cardholder;
-import com.gutierrez.miguel.challenge.cardholder.domain.model.vo.Balance;
 import com.gutierrez.miguel.challenge.cardholder.domain.ports.CardholderRepositoryPort;
 import com.gutierrez.miguel.challenge.transaction.domain.model.Transaction;
 import com.gutierrez.miguel.challenge.transaction.domain.model.vo.TransactionAmount;
@@ -23,7 +22,7 @@ public class CreateTransactionService {
     public Transaction execute(UUID cardholderId, BigDecimal amount, String description) {
         Cardholder cardholder = cardholderRepository.findById(cardholderId);
 
-        cardholder.setBalance(new Balance(cardholder.getBalance().value().add(amount)));
+        cardholder.increaseBalance(amount);
         cardholderRepository.save(cardholder);
 
         Transaction transaction = Transaction.builder()
@@ -31,7 +30,7 @@ public class CreateTransactionService {
                 .cardholderId(cardholderId)
                 .amount(new TransactionAmount(amount))
                 .description(description)
-                .timestamp(LocalDateTime.now())
+                .date(LocalDateTime.now())
                 .build();
 
         return transactionRepository.save(transaction);

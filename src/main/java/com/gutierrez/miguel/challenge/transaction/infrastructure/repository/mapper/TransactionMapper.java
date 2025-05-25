@@ -12,7 +12,7 @@ public class TransactionMapper {
     public TransactionEntity toEntity(Transaction transaction) {
         return TransactionEntity.builder()
                 .id(transaction.getId())
-                .date(transaction.getTimestamp())
+                .date(transaction.getDate())
                 .description(transaction.getDescription())
                 .cardholder(CardholderEntity.builder().id(transaction.getCardholderId()).build())
                 .amount(transaction.getAmount().value())
@@ -22,7 +22,7 @@ public class TransactionMapper {
     public Transaction toDomain(TransactionEntity transactionEntity) {
         return Transaction.builder()
                 .id(transactionEntity.getId())
-                .timestamp(transactionEntity.getDate())
+                .date(transactionEntity.getDate())
                 .description(transactionEntity.getDescription())
                 .cardholderId(transactionEntity.getCardholder().getId())
                 .amount(new TransactionAmount(transactionEntity.getAmount()))
