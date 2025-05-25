@@ -3,6 +3,9 @@ spring:
     name: gaming_challenge
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:mock}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
 
 ---
 

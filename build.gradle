@@ -44,6 +44,9 @@ dependencies {
     // H2
     runtimeOnly 'com.h2database:h2'
 
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
