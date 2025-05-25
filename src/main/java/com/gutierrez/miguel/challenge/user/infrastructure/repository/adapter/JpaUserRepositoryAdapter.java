@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * JPA implementation of the UserRepositoryPort.
@@ -40,7 +39,7 @@ public class JpaUserRepositoryAdapter implements UserRepositoryPort {
                 .map(mapper::toDomain)
                 .orElseThrow(() -> {
                     log.error("User not found with id: {}", id);
-                    return new UserNotFoundException("User with id %d not found", id);
+                    return new UserNotFoundException("User with id %s not found", id);
                 });
     }
 
@@ -49,6 +48,6 @@ public class JpaUserRepositoryAdapter implements UserRepositoryPort {
         log.debug("Finding all users");
         return repository.findAll().stream()
                 .map(mapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 } 
