@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: gaming_challenge
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:mock}
+
+---
+
+logging:
+  level:
+    org.springframework.kafka: INFO
+    org.hibernate.SQL: DEBUG
